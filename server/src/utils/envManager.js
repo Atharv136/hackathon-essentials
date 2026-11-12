@@ -17,7 +17,6 @@ export const MONITORED_KEYS = {
   supabase: ['VITE_SUPABASE_URL', 'VITE_SUPABASE_ANON_KEY', 'SUPABASE_SERVICE_ROLE_KEY'],
   gemini: ['GEMINI_API_KEY'],
   higgsfield: ['HIGGSFIELD_API_KEY', 'HIGGSFIELD_BASE_URL'],
-  mongodb: ['MONGODB_URI'],
   whatsapp: ['WHATSAPP_PROVIDER', 'TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN', 'TWILIO_WHATSAPP_NUMBER']
 };
 
@@ -96,7 +95,6 @@ export const updateCredential = (key, value) => {
 
   if (key.startsWith('VITE_')) {
     writeEnvKey(CLIENT_ENV, key, cleanValue);
-    // Also mirror to server .env if server needs it (e.g. SUPABASE_URL)
     if (key === 'VITE_SUPABASE_URL') {
       writeEnvKey(SERVER_ENV, 'SUPABASE_URL', cleanValue);
       process.env['SUPABASE_URL'] = cleanValue;
@@ -104,7 +102,6 @@ export const updateCredential = (key, value) => {
   } else {
     writeEnvKey(SERVER_ENV, key, cleanValue);
     process.env[key] = cleanValue;
-    // If setting SUPABASE_URL, mirror to client as VITE_SUPABASE_URL
     if (key === 'SUPABASE_URL') {
       writeEnvKey(CLIENT_ENV, 'VITE_SUPABASE_URL', cleanValue);
     }
@@ -117,13 +114,13 @@ export const updateCredential = (key, value) => {
  * Mask secret values for display
  */
 export const maskSecret = (val) => {
-  if (!val || val.startsWith('your-') || val.includes('<username>')) return '(not set)';
+  if (!val || val.startsWith('your-')) return '(not set)';
   if (val.length <= 8) return '********';
   return val.slice(0, 4) + '...' + val.slice(-4);
 };
 
 /**
- * Check which credentials are missing
+ * Check which credentials are configured or missing
  */
 export const getCredentialStatus = () => {
   initEnvFiles();
@@ -134,7 +131,7 @@ export const getCredentialStatus = () => {
   const checkConfigured = (key) => {
     const val = merged[key];
     if (!val) return false;
-    if (val.startsWith('your-') || val.includes('example.mongodb.net') || val === 'https://your-project.supabase.co') {
+    if (val.startsWith('your-') || val === 'https://your-project.supabase.co') {
       return false;
     }
     return true;

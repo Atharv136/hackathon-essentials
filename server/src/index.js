@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import config from './config/env.js';
-import connectDB from './config/db.js';
 import routes from './routes/index.js';
 import errorHandler from './middleware/errorHandler.js';
+import { isSupabaseConfigured } from './services/supabase.js';
 
 const app = express();
 
@@ -21,8 +21,12 @@ app.use('/api', routes);
 // Central Error Handler
 app.use(errorHandler);
 
-// Connect to MongoDB gracefully
-connectDB();
+// Log Database & Server Status
+if (isSupabaseConfigured) {
+  console.log(`✅ [Database] Supabase (PostgreSQL) connected & configured at ${config.supabase.url}`);
+} else {
+  console.warn(`⚠️ [Database] Supabase credentials missing or incomplete in server/.env`);
+}
 
 // Start Server
 const server = app.listen(config.port, () => {
@@ -31,4 +35,3 @@ const server = app.listen(config.port, () => {
 });
 
 export default app;
-

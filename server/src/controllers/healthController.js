@@ -1,9 +1,7 @@
-import { getDBStatus } from '../config/db.js';
 import config from '../config/env.js';
+import { isSupabaseConfigured } from '../services/supabase.js';
 
 export const getHealth = (req, res) => {
-  const dbStatus = getDBStatus();
-
   res.status(200).json({
     status: 'ok',
     uptime: process.uptime(),
@@ -11,17 +9,18 @@ export const getHealth = (req, res) => {
     environment: config.nodeEnv,
     services: {
       database: {
-        connected: dbStatus.connected,
-        status: dbStatus.connected ? 'connected' : 'disconnected'
+        engine: 'supabase-postgresql',
+        configured: isSupabaseConfigured,
+        status: isSupabaseConfigured ? 'configured' : 'unconfigured'
+      },
+      supabase: {
+        configured: isSupabaseConfigured
       },
       gemini: {
         configured: Boolean(config.gemini.apiKey && !config.gemini.apiKey.startsWith('your-'))
       },
       higgsfield: {
         configured: Boolean(config.higgsfield.apiKey && !config.higgsfield.apiKey.startsWith('your-'))
-      },
-      supabase: {
-        configured: Boolean(config.supabase.url && !config.supabase.url.startsWith('https://your-'))
       },
       whatsapp: {
         provider: config.whatsapp.provider,
@@ -33,4 +32,3 @@ export const getHealth = (req, res) => {
     }
   });
 };
-
