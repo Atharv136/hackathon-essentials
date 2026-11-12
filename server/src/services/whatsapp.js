@@ -218,9 +218,13 @@ class WhatsAppService {
         `${this.twilioConfig.accountSid}:${this.twilioConfig.authToken}`
       ).toString('base64');
 
-      const params = new URLSearchParams();
-      params.append('To', to.startsWith('whatsapp:') ? to : `whatsapp:${to}`);
-      params.append('From', this.twilioConfig.phoneNumber);
+      const toNum = to.startsWith('whatsapp:') ? to : `whatsapp:${to.replace(/\s+/g, '')}`;
+      const fromNum = this.twilioConfig.phoneNumber.startsWith('whatsapp:')
+        ? this.twilioConfig.phoneNumber
+        : `whatsapp:${this.twilioConfig.phoneNumber.replace(/\s+/g, '')}`;
+
+      params.append('To', toNum);
+      params.append('From', fromNum);
       params.append('Body', body);
 
       const res = await axios.post(url, params.toString(), {
