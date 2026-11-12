@@ -18,3 +18,4 @@ export const isValidEmail = (email) => {
 export const isValidPassword = (password, minLength = 6) => {
   return typeof password === 'string' && password.length >= minLength;
 };
+

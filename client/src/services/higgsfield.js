@@ -26,3 +26,4 @@ export const higgsfieldService = {
 };
 
 export default higgsfieldService;
+

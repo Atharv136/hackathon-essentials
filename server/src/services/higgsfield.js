@@ -58,3 +58,4 @@ class HiggsfieldService {
 
 export const higgsfieldService = new HiggsfieldService();
 export default higgsfieldService;
+

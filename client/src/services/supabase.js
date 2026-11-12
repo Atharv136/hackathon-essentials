@@ -21,3 +21,4 @@ const validUrl = isSupabaseConfigured ? supabaseUrl : 'https://placeholder.supab
 const validKey = isSupabaseConfigured ? supabaseAnonKey : 'placeholder-anon-key';
 
 export const supabase = createClient(validUrl, validKey);
+
